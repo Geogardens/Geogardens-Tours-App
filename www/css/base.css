@@ -1,0 +1,925 @@
+body {
+    /* Change Gradient colors here by substituting the rgba numbers, ellipse cannot be rotated */
+    
+    background: -webkit-radial-gradient(ellipse, rgba(194, 190, 134, 1)0%, rgba(241, 241, 216, 1)) 100%;
+}
+
+#global-nav {
+    display: none;
+}
+
+.tileGroup {
+    margin: 0 auto;
+    width: 95%;
+    text-align: center;
+}
+
+.tile {
+    /*box-shadow: inset 0 0 53em .02em #000;*/
+    
+    float: left;
+    text-align: center;
+    position: relative;
+    width: 48%;
+    padding-bottom: 46%;
+    /* = width for a 1:1 aspect ratio */
+    
+    margin: 0.75%;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    /* you change this to "contain" if you don't want the images to be cropped */
+    
+    border-radius: 4px;
+}
+
+.featuredTile {
+    width: 100%;
+    height: 35%;
+    position: relative;
+    -webkit-box-shadow: 0px 1px 5px 3px rgba(0, 0, 0, .5);
+    margin-bottom: 20px;
+}
+
+.labelOverlay {
+    font-size: large;
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    color: white;
+    padding: 5px 0px;
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(0, 0, 0, 0)), color-stop(100%, rgba(0, 0, 0, 0.65)));
+}
+
+.featuredTile .labelOverlay {
+    font-size: x-large;
+    padding: 15px
+}
+
+.labelOverlay > .subtitle {
+    font-size: medium;
+    font-style: italic;
+    padding-top: 5px;
+    color: rgb(243, 243, 243)
+}
+
+.photoSlide {
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100%
+}
+
+nav {
+    background: #919353;
+    /* Navigation bar background */
+    
+    color: white;
+    box-shadow: 0px 2px 10px #888888;
+    display: block;
+    text-align: center;
+    background: #919353;
+    padding-top: 8px
+}
+
+.BrandingImage {
+    text-align: center;
+}
+
+.BrandingImage > img {
+    max-width: 93%;
+    height: inherit;
+    max-height: 93%;
+}
+
+.ListItem {
+    width: 99%;
+    background: rgba(255, 255, 255, 0) !important;
+    font-size: 16px !important;
+    color: #404040;
+}
+
+.ListItem > a {
+    text-decoration: none;
+    font-size: 22px !important;
+}
+
+.ListItem > a > p {
+    color: #404040 !important;
+}
+
+.list {
+    background: none;
+    margin-top: 2px;
+}
+
+.list > li {
+    padding-bottom: 10px !important;
+    padding-top: 10px !important;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    background: none;
+}
+
+.backButton {
+    width: 120px;
+    border: none;
+    float: left;
+    padding-top: 22px;
+    box-shadow: none !important;
+    cursor: pointer;
+    background-image: url(../images/backButtons/backBtn.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-origin: content-box;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    padding-left: 16px;
+    height: 100px;
+}
+
+.rightButton {
+    float: right;
+    background-color: none;
+    width: 68px;
+    height: 39px;
+    border: none;
+    right: 0px;
+    position: absolute;
+    margin-top: 10px;
+    box-shadow: none !important;
+    float: right;
+    background-color: none;
+    width: 68px;
+    height: 25px;
+    border: none;
+    right: 0px;
+    position: absolute;
+    /* margin-top: 10px; */
+    
+    box-shadow: none !important;
+    padding-top: 0px;
+    padding-bottom: 10px;
+    background-position: right;
+    padding-right: 15px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-origin: content-box;
+}
+
+.btnMap {
+    background-image: url(../images/Buttons/mapToggle2.png);
+}
+/*List of trails background*/
+
+#ul_Trails {
+    background: rgba(255, 255, 255, 0) !important;
+    border-bottom: none !important;
+}
+
+.divTourStops {
+    position: relative;
+    left: 50px;
+    /*bottom: 17px;*/
+}
+
+.leftNavButton {
+    position: absolute;
+}
+/*PhotoList*/
+
+#NoPhoto {
+    text-align: center;
+    left: 40%;
+    top: 50%;
+    position: f;
+    font-size: 30px;
+    font-weight: 300;
+    line-height: 40px;
+    display: none;
+}
+/*End PhotoList*/
+/*About Page*/
+
+#content {
+    width: 94%;
+    height: auto;
+    position: relative;
+    float: left;
+    /*margin-top: 60px;*/
+    
+    margin: 10px 10px 0px 10px;
+    margin-left: 10px;
+    overflow-y: auto;
+}
+
+#about1 {
+    float: left;
+}
+
+#about1 img {
+    float: left;
+    padding-right: 10px;
+}
+
+#about2 {
+    float: right;
+}
+
+#about2 img {
+    float: right;
+    padding-left: 10px;
+}
+
+#about3 {
+    float: left;
+}
+
+#about3 img {
+    float: left;
+    padding-right: 10px;
+}
+/*End About Page*/
+/*Individual Photos*/
+
+#PicDiv {
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    vertical-align: middle;
+    position: absolute;
+}
+
+.Centerer {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+#MainPic {
+    margin: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+img#MainPic {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.OverlayText {
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    height: 135px;
+}
+
+.TextWrapper {
+    position: relative;
+    padding-left: 20px;
+    padding-right: 20px;
+    /*padding-top:2px;
+	 padding-bottom:8px;*/
+    
+    color: white !important;
+    /*background: rgba(75,75,75,.7);*/
+    
+    height: 100%;
+    /*width:95%*/
+}
+
+#PhotoDesc {
+    color: white;
+    height: 100%;
+    text-align: justify;
+    overflow: hidden;
+}
+
+.SlideUp {
+    -webkit-transition: all 2s ease;
+    -moz-transition: all 2s ease;
+    bottom: -1000px;
+}
+/*End Individual Photos*/
+/*Sponsors Page*/
+
+.TopText p {
+    color: #000 !important;
+}
+
+.SponsorItem {
+    list-style: none;
+    text-align: center;
+    padding-top: 15px;
+    /*padding-bottom: 15px;*/
+    
+    border-bottom: 1px solid rgba(46, 46, 46, 0.61);
+}
+
+#SponsorsList {
+    padding-left: 0px;
+}
+/*End Sponsors Page*/
+/*Stop View */
+
+.MediaLinks {
+    list-style: none;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+
+.MediaLinks li {
+    display: inline-block;
+    text-align: center;
+    width: 32%;
+    padding: 0px;
+    min-width: 10px;
+}
+
+.MediaLinks li div {
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 0 px;
+    padding-bottom: 20px;
+}
+
+.MediaLinks li div img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#stopDescription {
+    margin: 8px 14px;
+    text-align: justify;
+}
+
+.TopWrapper {
+    position: relative;
+    height: 50%;
+}
+
+#OverlayText {
+    margin-left: 10px;
+    display: inline-table;
+    vertical-align: super;
+}
+
+.Text {
+    text-shadow: 0 0px 0 rgba(255, 255, 255, 0) !important;
+    position: absolute;
+    color: white;
+    z-index: 999;
+    max-height: 40%;
+    display: block;
+    background: rgba(39, 37, 37, .65);
+    /*height: 7%;*/
+    /*padding: 10px;*/
+    
+    vertical-align: middle;
+    bottom: 0px;
+    display: inline-table;
+    width: 100%;
+}
+
+#PinImage {
+    display: inline-table;
+}
+/*
+#btnTourMap {
+    float: right;
+    background-color: none;
+    width: 68px;
+    height: 39px;
+    border: none;
+    right: 0px;
+    position: absolute;
+    margin-top: 10px;
+    box-shadow: none !important;
+}
+#btnTourMap > img{
+content:url(..images/Buttons/mapToggle2.png);
+    width:30px;height:30px;right:0px;cursor:pointer;top:10px;
+}
+*/
+
+h4 {
+    -webkit-margin-before: 0em !important;
+    -webkit-margin-after: 0em !important;
+}
+
+.Video {
+    height: 0px;
+    width: 0px;
+}
+
+.hidden {
+    display: none;
+}
+
+.SlideDown {
+    -webkit-transition: all 5s ease;
+    -moz-transition: all 5s ease;
+    right: -5000px;
+    position: absolute;
+}
+
+.SlideBack {
+    -webkit-transition: all 5s ease;
+    -moz-transition: all 5s ease;
+    right: 0px;
+    position: absolute;
+}
+
+.hidden {
+    display: none;
+}
+
+.CoverImageDiv {
+    background-position: center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    /*background-image: url('https://d262ilb51hltx0.cloudfront.net/fit/c/1200/960/gradv/29/81/60/darken/25/1*4ncz3hLxmL8E_bUh-0z62w.jpeg');
+	 */
+    
+    height: 100%;
+}
+
+.CoverWrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.LeftSwitchArrow {
+    position: absolute;
+    top: 30%;
+    left: 10px;
+}
+
+.RightSwitchArrow {
+    position: absolute;
+    top: 30%;
+    right: 10px;
+}
+/*Stopview ends*/
+
+#StopListContainer {
+    width: 100%;
+    position: absolute;
+    top: 61px;
+    overflow-y: scroll;
+    bottom: 0px;
+}
+
+.StopItem {}
+
+.TargetStopItem {
+    font-weight: bold;
+    background-color: #C2BE86 !important;
+    padding: 10px 0px;
+    border-radius: 6px;
+}
+
+.TourHeader {
+    display: block;
+    text-align: center;
+    padding: 5px;
+    font-size: 14pt;
+    font-weight: bold;
+    width: 100%;
+    z-index: 99;
+    position: absolute;
+    top: 0px;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.GuidedTourButton {
+    float: left;
+    text-align: left;
+    font-size: 10pt;
+    background-color: #C3BF88;
+    border-radius: 8px;
+    width: 150px;
+    margin: 5px 0px 0px 5px;
+    vertical-align: middle;
+    color: #707070;
+    border: 1px solid #707070;
+}
+
+.tourOn {
+    color: black;
+    background-color: #C3BF88;
+}
+/*Splash Screen*/
+/*Sponsor loading page progress bar*/
+
+.ui-progressbar-value {
+    background-image: url('../images/mapButtons/loader512.gif') !important;
+    max-height: auto;
+    transform: scale(0.2, 0.2);
+    -ms-transform: scale(0.2, 0.2);
+    /* IE 9 */
+    
+    -webkit-transform: scale(0.2, 0.2);
+    /* Safari and Chrome */
+}
+
+.sponsorImage {
+    height: auto;
+    width: 50%;
+}
+
+section {
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+    height: 100%;
+    position: relative;
+}
+
+.divTourStops {
+    width: 80% !important;
+}
+
+#splashScreen img {
+    margin: 0 auto;
+}
+
+#splashScreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #252525;
+    background-repeat: no-repeat;
+    text-align: center;
+}
+/* Home page Starts */
+/*#aboutBtn:link
+ {
+ width: 128px;
+ height: 128px;
+ position: relative;
+ float: left;
+ left: 60px;
+ background: url("../images/homeButtons/about_normal.png");
+ background-repeat:no-repeat;
+
+ }
+
+ #aboutBtn:active
+ {
+ background-image: url("../images/homeButtons/about_down.png");
+
+ }
+ /* Home page Ends */
+
+#vccfLogo {
+    /*width: 250px;*/
+    
+    width: 90%;
+    height: auto;
+    position: relative;
+    float: none;
+    margin: 20px auto;
+    text-align: center;
+}
+
+#homeLogo img {
+    /*width: 100%;
+
+	 margin:0 auto;
+	 padding-bottom:10px;*/
+}
+
+#homeFooter {
+    width: 90%;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    margin: 0 auto;
+    /*border-top: 1px solid #b6b6b6;*/
+    
+    z-index: 9999;
+    padding: 5px 0px;
+}
+
+#homeLogo {
+    width: 100%;
+    margin: 0 auto;
+    padding-top: 25px;
+}
+/*#main{
+	bottom: auto !important;
+}*/
+
+#mapPageTitle {
+    margin-right: 70px !important;
+}
+/*#homeBtns tr td #tourBtn
+ {
+ border-spacing: 0px 100px;
+ /*}*/
+/*Vani - 3/28/14*/
+
+.pinImage {
+    width: 24px;
+    height: 24px;
+    margin-left: 10px;
+}
+
+.LeftSwitchArrowPhotoList {
+    position: absolute;
+    float: left;
+    top: 50%;
+    left: 10px;
+    z-index: 999999;
+}
+
+.RightSwitchArrowPhotoList {
+    position: absolute;
+    float: right;
+    top: 50%;
+    right: 10px;
+    z-index: 999999;
+}
+
+.SlideDownPhotoList {
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    bottom: -300px;
+}
+
+.SlideUpPhotoList {
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    bottom: 0px;
+}
+/*.RestorePhotoInfo{
+ height:auto;
+ }*/
+
+.Fade {
+    opacity: 0.6;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+}
+
+.FadeOut {
+    opacity: 0;
+}
+
+#photoOverlay {
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    background: rgba(0, 0, 0, .6);
+    z-index: 999999;
+    position: absolute;
+}
+
+#PhotoTitle {
+    font-weight: bold;
+    font-size: 14pt;
+}
+
+#PhotoOverlayExpander {
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    opacity: 0.5;
+}
+
+.MaxPhotoInfo {
+    height: 100%;
+    background: rgba(0, 0, 0, .8);
+}
+
+.tourTitle {
+    font-weight: bold;
+    font-size: 14pt;
+    color: #404040;
+    display: block;
+    margin-bottom: 9px;
+}
+
+#TourName {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.tourDist {
+    font-style: italic;
+    color: #707070;
+    font-size: 13pt;
+    line-height: 16pt;
+}
+
+.tourDesc {
+    color: #707070;
+    font-size: 13pt;
+    line-height: 16pt;
+}
+
+.imgTourStops {
+    width: 30px;
+    vertical-align: middle;
+}
+/*.ListItemTourStops {
+ width: 99%;
+ height:35px;
+ background-color:#F2F0F0;
+ }*/
+
+.stopName {
+    /*margin-bottom:10px;*/
+    
+    position: relative;
+    height: auto;
+    width: 85%;
+    color: #404040;
+    padding-left: 5px;
+    vertical-align: middle;
+    display: inline-block;
+    /*padding-left:5px;*/
+}
+
+.StopContainer {
+    padding-bottom: 10px;
+}
+
+.ListLink {
+    height: auto;
+    width: inherit;
+    position: relative;
+}
+
+.ListImg {
+    min-height: 70px;
+    height: auto;
+}
+
+.thumb {
+    padding: 5px 5px 0px 10px;
+}
+
+.thumbDesc {
+    font-size: 14px;
+}
+
+.basemapSwitcher {
+    font-size: 20pt;
+    padding: 9px 0px;
+    height: 17px;
+    border-left: #B5B063;
+    border-width: 1px;
+    /*border-left-style: solid;*/
+    
+    color: black;
+    font-size: 16pt;
+    /*z-index: 10000 !important;*/
+}
+
+#mapRightNavigation {
+    -webkit-transform: translateZ(900px);
+    background-color: rgba(166, 162, 81, 0);
+    width: 68px;
+    height: 39px;
+    border: none;
+    position: absolute;
+    margin-top: 13px;
+    right: 0px;
+    cursor: pointer;
+}
+
+.mapTools {
+    padding: 5px 0px;
+    height: 28px;
+}
+
+.basemapSelected {
+    background-color: #919353;
+    border-radius: 8px;
+    color: white;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 0;
+}
+
+#mapToolbar {
+    position: absolute;
+    bottom: 0px;
+    height: 41px;
+    background-color: rgba(194, 190, 134, 1);
+    text-align: center;
+    width: 100%;
+    font-size: 14pt;
+}
+
+#tourSponsorsContainer {
+    text-align: center;
+    line-height: 30px;
+    width: 100%;
+    height: auto;
+    position: relative;
+    float: none;
+    margin: 0 auto;
+}
+
+#tourSponsorList {
+    list-style: none;
+    position: inherit;
+    float: inherit;
+    padding: 0px !important;
+}
+
+.tourSponsorItem {
+    padding-bottom: 15px;
+}
+
+.firstInLevel {
+    padding-top: 18px;
+}
+
+.sponsorLevel1 {
+    font-size: 20pt;
+    padding-bottom: 15px;
+}
+
+.sponsorLevel2 {
+    font-size: 18pt;
+    padding-bottom: 10px;
+}
+
+.sponsorLevel3 {
+    font-size: 16pt;
+    padding-bottom: 5px;
+}
+
+.sponsorLevel4 {
+    font-size: 14pt;
+    padding-bottom: 5px;
+}
+
+.photoContainer {
+    width: 100%;
+    height: 100%;
+}
+
+.slidePhoto {
+    margin: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.NoInternetWarning {
+    padding: 5px;
+    font-size: 10pt;
+    vertical-align: middle;
+    z-index: 9999;
+    position: absolute;
+    top: 0px;
+    background-color: rgba(255, 0, 0, 0.7);
+    right: 0;
+    color: white;
+}
+
+.LowGpsWarning {
+    display: none;
+    padding: 5px;
+    font-size: 10pt;
+    vertical-align: middle;
+    z-index: 9999;
+    position: absolute;
+    top: 29px;
+    background-color: rgba(255, 0, 0, 0.7);
+    right: 0;
+    color: white;
+}
+
+.WarningImage {
+    vertical-align: middle;
+    height: 14px;
+    padding-right: 5px;
+}
+
+#appVersion {
+    float: right;
+    padding: 5px;
+}

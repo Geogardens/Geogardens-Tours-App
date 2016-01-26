@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8" />
+		<meta name="format-detection" content="telephone=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="default">
+		<meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src  'self' 'unsafe-inline' *">
+		
+		<!--<meta name="viewport" content="width=device-width, user-scalable=no">-->
+		<!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+		<!--<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1,  target-densitydpi=mediums-dpi" />-->
+
+		<title>Geogardens Tours</title>
+		<link rel="stylesheet" type="text/css" href="css/chui.android-3.0.4.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/VBGTheme_001.css" />
+		<link rel="stylesheet" type="text/css" href="css/esri.css" />
+		<link rel="stylesheet" type="text/css" href="css/idangerous.swiper.css">
+
+		<script src="js/jquery-1.10.1.min.js"></script>
+		<script src="js/jquery-ui.js"></script>
+		<script type="text/javascript" src="js/jquery.hammer.js"></script>
+
+		<script type="text/javascript" src="js/Utils.js"></script>
+		<script src="http://connect.soundcloud.com/sdk.js"></script>
+		<script src="http://connect.soundcloud.com/soundmanager2/soundmanager2.js"></script>
+		<script type="text/javascript" src="http://www.youtube.com/iframe_api"></script>
+		<script type="text/javascript" src="js/chui-3.6.2.js"></script>
+
+		<script src="http://js.arcgis.com/3.11/"></script>
+		<script type="text/javascript" charset="utf-8" src="js/storytrails/esriModuleLoader.js"></script>
+
+		<script type="text/javascript" src="js/map.js"></script>
+		<script type="text/javascript" src="js/storytrails/mapLocation.js"></script>
+
+		<script type="text/javascript" src="js/PhotoList.js"></script>
+		<script type="text/javascript" src="js/idangerous.swiper.js"></script>
+		<script type="text/javascript" src="js/storytrails/storyTrails.js"></script>
+		<script type="text/javascript" src="js/storytrails/storytrailsUI.js"></script>
+
+		<script type="text/javascript" src="data/data.js"></script>
+		<script type="text/javascript" src="cordova.js"></script>
+		<!--<script type='application/javascript' src='js/fastclick.js'></script>-->
+		<!--<script type="text/javascript" src="js/arcgis/3.10compact/init.js"></script>-->
+
+		<style>
+			.ImageList {
+				height: 80%;
+				-webkit-padding-start: 0px !important;
+				text-align: center;
+			}
+
+			.ImageList ul {
+				padding: 0px !important;
+			}
+
+			.ImageList li {
+				list-style: none;
+			}
+
+			.ImageList li img {
+				max-width: 100%;
+				max-height: 100%;
+				position: relative;
+			}
+
+			.backwards {
+				-webkit-transform: rotateY(180deg) !important;
+			}
+
+			.FlipLeft {
+				-webkit-transition: -webkit-transform 1.5s !important;
+				-webkit-transform: rotateY(180deg) !important;
+				-webkit-transform-style: preserve-3d;
+			}
+		</style>
+		<script>
+			var dojoConfig = {
+				parseOnLoad : true
+			};
+		</script>
+		<script>
+			var appVersion = "0.0.1";
+			var debug = false;
+			var toursLayer;
+			var sponsorsLayer;
+			var actualGeolocate = false;
+			var screenHeight;
+			var screenWidth;
+			var networkState;
+
+			var connectionCheckFailed = false;
+			var mapRedraws = 0;
+			var referringArticle = "main";
+			var configLink = "http://services6.arcgis.com/4uAfQe3k1vJfJNXE/ArcGIS/rest/services/Geogardens_Config/FeatureServer/0";
+			var appData;
+			var appProfile = new userProfile();
+			var dataSource;
+			var backTarget = "main";
+			var config = {
+				map : {
+					view : "Garden",
+					fullExtent : null,
+					imageryServices : [],
+					gardenServices : [],
+					trailService : null,
+					contourService : null,
+					gardenMap : null,
+					imageryMap : null,
+					topoMap : null
+
+				}
+			};
+			var loadingMap = false;
+
+			function loadAppData() {
+				if (localStorage.getItem("appData") != null && localStorage.getItem("appData") != "" && localStorage.getItem("appData") != "[object Object]") {
+
+					appData = JSON.parse(localStorage.getItem("appData"));
+					dataSource = "localStorage";
+				} else {
+					appData = defaultData;
+					dataSource = "defaultData";
+				}
+				loadAppSponsorsList(appData.sponsors);
+				//Load it to cache the images but immediately clear the list because of the event ordering issue. We'll reload it when they tap it.
+
+				loadTourList(appData.tours);
+				try {
+					var loadData = new app(configLink);
+					loadData.loadContent(function(data) {
+						appData = data;
+						konsole.log("got data from service");
+						dataSource = "dynamic";
+						//loadAppSponsorsList(appData.sponsors);
+						loadMap();
+						loadTourList(appData.tours);
+						localStorage.appData = JSON.stringify(data);
+						//initUI();
+						$("#sponsorThankYouText").text(appData.sponsorThankYou);
+						loadAppSponsorsList(appData.sponsors);
+					});
+
+				} catch (err) {
+					konsole.log("error loading service data");
+				}
+			}
+
+			function onBodyLoad() {
+				konsole.log("Document load");
+				document.addEventListener("deviceready", onDeviceReady, false);
+				//FastClick.attach(document.body);
+			}
+
+			function CheckConnection() {
+
+				if (navigator.connection.type == Connection.NONE) {
+					$(".NoInternetWarning").show();
+					$("#AudioImage").attr("src", "images/soundInactive.png");
+					$("#VideoImage").attr("src", "images/videoInactive.png");
+
+				} else {
+					$(".NoInternetWarning").hide();
+					if ( typeof (SC) == "undefined" || SC == null) {
+						$.ajax({
+							url : "http://connect.soundcloud.com/sdk.js",
+							dataType : "script",
+							cache : true,
+							success : function() {
+								SC.initialize({
+									client_id : scClientId
+								});
+								konsole.log("Sound cloud api loaded");
+								$.ajax({
+									url : "http://connect.soundcloud.com/soundmanager2/soundmanager2.js",
+									dataType : "script",
+									cache : true,
+									success : function() {
+										konsole.log("Sound manager api loaded");
+									}
+								});
+							}
+						});
+						$.ajax({
+							url : "http://www.youtube.com/iframe_api",
+							dataType : "script",
+							cache : true,
+							success : function() {
+								konsole.log("YouTube api loaded.");
+							}
+						});
+
+					}
+
+					try {
+						if ( typeof (map) != "undefined" && map.loaded == true) {
+							if (networkState == Connection.NONE) {
+								//reload stuff if we were disconnected...
+								try {
+									var visibleLayers = map.getLayersVisibleAtScale();
+									for (var i = 0; i < visibleLayers.length; i++) {
+										visibleLayers[i].refresh();
+									}
+								} catch (err) {
+									konsole.log("error reloading map layers - " + err.message);
+								}
+								if (currentStop != null && typeof (currentStop) != "undefined") {
+									goToStop(currentTour.tag, currentStop.orderId);
+								}
+
+								if (dataSource != "dynamic") {
+									try {
+										loadAppData();
+									} catch (err) {
+										konsole.log("error loading app data - " + err.message);
+									}
+								}
+							}
+
+						} else if (map.loaded == false) {
+							loadMap();
+						}
+
+					} catch (err) {
+						if (loadingMap == false) {
+							loadingMap = true;
+							var mapLoader;
+							$.ajax({
+								url : "http://js.arcgis.com/3.11/",
+								dataType : "script",
+								cache : false,
+								success : function() {
+									setTimeout(loadEsriModulesAndMap(), 1500)
+
+								}
+							});
+
+						}
+					}
+					networkState = navigator.connection.type;
+				}
+			}
+
+			function loadEsriModulesAndMap() {
+				require(["esri/map", "esri/SpatialReference", "esri/layers/GraphicsLayer", "esri/layers/FeatureLayer", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol", "esri/arcgis/utils", "dojo/domReady!"], function(Map, SpatialReference, GraphicsLayer, FeatureLayer, PictureMarkerSymbol, SimpleFillSymbol, SimpleLineSymbol, arcgisUtils) {
+					setTimeout(function() {
+						konsole.log("Loaded esri modules");
+
+						loadMap();
+						if (dataSource != "dynamic") {
+							try {
+								loadAppData();
+							} catch (err) {
+								konsole.log("error loading app data - " + err.message);
+							}
+						}
+						loadingMap = false;
+					}, 1500);
+				});
+			}
+
+			function onDeviceReady() {
+				$("#appVersion").text("App Version: " + appVersion);
+				navigator.splashscreen.show();
+
+				appData = defaultData;
+
+				//Geolocate();
+
+				initPhotoEvents();
+				initSwiper();
+
+				loadAppData();
+				initUI();
+				//loadAppSponsorsList(appData.sponsors);
+				loadTourList(appData.tours);
+				try {
+					loadMap();
+					//loadEsriModulesAndMap();
+					//startGeolocation();
+				} catch (err) {
+					konsole.log("Error with map or geolocation");
+
+				}
+
+				CheckConnection();
+				setInterval(function() {
+					CheckConnection();
+				}, 10000);
+
+				initHistory();
+				navigator.splashscreen.hide();
+			}
+
+			function initHistory() {
+
+				//this is extremely hackish
+				//the problem is that we navigate to pages before inititalizing them
+				//and chocolatechip ui requires them to be in "order" in the $.UINavigationHistory
+				//array.  What I am shamefully doing here is setting 50 instances of each so it never defaults
+				//to "undefined" which breaks the site.  When more time is available, fix this!
+				for (var i = 0; i < 500; i++) {
+					var x = i % 10;
+					switch (x) {
+					case 0:
+						$.UINavigationHistory.push("#main");
+						break;
+					case 1:
+						$.UINavigationHistory.push("#about");
+						break;
+					case 2:
+						$.UINavigationHistory.push("#sponsors");
+						break;
+					case 3:
+						$.UINavigationHistory.push("#trailList");
+						break;
+					case 4:
+						$.UINavigationHistory.push("#mapArticle");
+						break;
+					case 5:
+						$.UINavigationHistory.push("#listOfStops");
+						break;
+					case 6:
+						$.UINavigationHistory.push("#stopView");
+						break;
+					case 7:
+						$.UINavigationHistory.push("#photoList");
+						break;
+
+					case 8:
+						$.UINavigationHistory.push("#individualPhotos");
+						break;
+					case 9:
+						$.UINavigationHistory.push("#splash");
+						break;
+					}
+
+				}
+
+			}
+
+			function RotateTwoViews(view1, view2) {
+
+			}
+
+			function stopRedraws() {
+				clearInterval(redrawTimer);
+				mapRedraws = 0;
+			}
+		</script>
+	</head>
+
+	<body onload="onBodyLoad()" style="height:100%;">
+		<nav class="current">
+
+			<h1>Geogardens</h1>
+		</nav>
+		<article id="main" class="current">
+			<section>
+
+				<div id="tileTours" class="featuredTile" style="background-image:url('images/home/tourBanner.png');">
+					<div class="labelOverlay">
+						Take a Tour!
+						<div class="subtitle">
+							Take a guided walking tour!
+						</div>
+					</div>
+
+				</div>
+
+				<div class="tileGroup">
+					<div id="tileAbout" class="tile" style="background-image:url('images/home/aboutTile.png');">
+						<div class="labelOverlay">
+							About Geogardens
+						</div>
+					</div>
+					<div id="tileGettingHere" class="tile" style="background-image:url('images/home/directionsTile.png');">
+						<div class="labelOverlay">
+							Getting Here
+						</div>
+					</div>
+					<!-- Second Row -->
+					<div id="tileMap" class="tile" style="background-image:url('images/home/mapTile.png');">
+						<div class="labelOverlay">
+							Maps
+						</div>
+					</div>
+
+					<div id="tileSponsors" class="tile" style="background-image:url('images/home/sponsorTile.png');">
+						<div class="labelOverlay">
+							Our Sponsors
+						</div>
+					</div>
+				</div>
+
+				<div id="homeFooter" style="display: none">
+					<table style="text-align: center;">
+
+						<tr>
+							<td><img style="width: 85%; height: auto;" src="images/homeButtons/donate_normal.png" onclick="window.open('https://secure.venturabotanicalgardens.com/donation.jsp?campaign=59&', '_system')" /></td>
+							<td><img style="width:85%;height:auto;" src="images/homeButtons/volunteer_normal.png" onclick="window.open('https://secure.venturabotanicalgardens.com/survey.jsp?surveyId=3&', '_blank', 'location=yes,EnableViewPortScale=yes', 'closebuttoncaption=Return')" /></td>
+
+						</tr>
+					</table>
+				</div>
+
+			</section>
+		</article>
+		<nav class="next">
+			<div id="aboutBack" class="backButton hrefHome"></div>
+
+			<h1>About Us</h1>
+		</nav>
+		<article id="about" class="next">
+			<section>
+				<div id="content">
+					<img src="img/homeScreenLogo.png" style="width:90%;text-align: center;margin:auto;display: block;">
+					<p>
+						Mission:
+						<br/>
+
+						<em>"To establish a collaborative commons with emphasis on map-based educational technology for the benefit of botanic gardens, museums, zoos, parks, private lands, campuses, and governmental organizations.”</em>
+					</p>
+					<p>
+						Maps convey information quickly and effectively.  Maps help us organize data and visualize relationships.  Maps are incredibly powerful in directing us and helping us answer questions prefaced with where, when, and how.  Geogardens is dedicated to having maps and their data become a central and fundamental component of the nonprofit organization.
+					</p>
+					<p>
+						<em>Join with us and together we’ll show the way.</em>
+					</p>
+
+				</div>
+				<div id="appVersion"></div>
+			</section>
+		</article>
+		<nav class="next">
+			<h1 style="">Our Sponsors</h1>
+
+			<a id="sponsorBack" class="backButton hrefHome"></a>
+		</nav>
+		<article id="sponsors" class="next">
+			<section>
+				<div id="sponsorThankYou" class="TopText">
+					<br />
+					<p id="sponsorThankYouText" style="padding-left: 10px;
+					margin: 10px;">
+
+					</p>
+
+				</div>
+
+				<div class="SponsorsWrapper">
+					<ul id="SponsorsList"></ul>
+				</div>
+
+			</section>
+		</article>
+		<nav class="next">
+			<h1 style="">Tour List</h1>
+
+			<a id="toursBack" class="backButton hrefHome"></a>
+
+		</nav>
+		<article id="trailList" class="next">
+			<section>
+				<div class="NoInternetWarning"><img class="WarningImage" src="images/warning.png" /><span style="vertical-align:middle">No network</span>
+				</div>
+				<div id="divTrailLists">
+					<ul id="ul_Trails" class="list"></ul>
+				</div>
+			</section>
+		</article>
+		<nav class="next">
+			<h1 id="tourSplashTitle" style="margin:0px">We Love Our Sponsors!!</h1>
+			<!--<span style="font-size:17px;top:20px;font-weight:bold;color:black;">This tour is sponsored by</span>-->
+
+		</nav>
+		<article id="splash" class="next">
+			<div id="splashScreen" style="background-color:rgba(0,0,0,0);">
+				<div id="tourSponsorsContainer">
+					<ul id="tourSponsorList">
+						<li>
+							<span style="font-size:22px;">VCCF Heritage Fund</span>
+						</li>
+						<li>
+							<span style="font-size:22px;">Matthew and Nancy South</span>
+						</li>
+
+						<li>
+							<span style="font-size:18px;">Douglas Singletary, AIA</span>
+						</li>
+						<li>
+							<span style="font-size:18px;">Tom Archbald and Manuel Marquez</span>
+						</li>
+						<li>
+							<span style="font-size:18px;">Don and Terry Belless</span>
+						</li>
+						<li>
+							<span style="font-size:14px;">Mike and Loretta Merewether</span>
+						</li>
+						<li>
+							<span style="font-size:14px;">David and Ellen Wohlstadter</span>
+						</li>
+						<li>
+							<span style="font-size:14px;">Jane Spiller</span>
+						</li>
+					</ul>
+				</div>
+
+				<div id="divProgressBar"><img src="images/loader512.gif" style=" width:40px; text-align: center; bottom:50px;">
+				</div>
+
+			</div>
+
+		</article>
+		<nav id="navOfStops" class="next">
+			<h1 style="">Tour Stops</h1>
+			<a id="backTourStops" class="backButton"></a>
+
+			<a id="btnTourMap" class="btnMap rightButton"> </a>
+
+		</nav>
+		<article id="listOfStops" class="next">
+			<section>
+				<div class="NoInternetWarning"><img class="WarningImage" src="images/warning.png" /><span style="vertical-align:middle">No network</span>
+				</div>
+				<div class="LowGpsWarning"><img class="WarningImage" src="images/warning.png" /><span style="vertical-align:middle">Low Accuracy</span>
+				</div>
+				<div class="TourHeader">
+					<div class="TourName"></div>
+					<div class="GuidedTourButton"><img class="tourBtn" src="images/Buttons/stopTour.png" float="left" style="height:25px;vertical-align: middle;"><span class="tourStatus">Guided Tour OFF</span>
+					</div>
+				</div>
+
+				<div id="StopListContainer">
+					<ul id="TrailStopList" class="list"></ul>
+				</div>
+			</section>
+		</article>
+		<nav class="next">
+			<h1 style="">Tour Stop</h1>
+			<a id="hrefViewStops" class="backButton"></a>
+			<a id="btnStopMap" class="btnMap rightButton" /> </a>
+		</nav>
+		<article id="stopView" class="next">
+			<div class="NoInternetWarning"><img class="WarningImage" src="images/warning.png" /><span style="vertical-align:middle">No network</span>
+			</div>
+			<div class="LowGpsWarning"><img class="WarningImage" src="images/warning.png" /><span style="vertical-align:middle">Low Accuracy</span>
+			</div>
+			<div class="TopWrapper">
+				<div id="divTrailInfo" style="height: 100%;">
+					<div class="Text">
+						<img src="" id="PinImage" />
+						<h4 id="OverlayText"></h4>
+					</div>
+					<!--<img id="CoverImage" src="" style="position:relative; display: none; width:100%;max-height:40%;" />-->
+					<div class="CoverWrapper">
+						<div class="CoverImageDiv"></div>
+						<div class="LeftSwitchArrow">
+							<img style="opacity: .6;" src="images/leftPointer.png" />
+						</div>
+						<div class="RightSwitchArrow">
+							<img style="opacity: .6;" src="images/rightPointer.png" />
+						</div>
+
+					</div>
+				</div>
+				<!--removed margin-top - by Vani (12/13/13)-->
+				<div id="stopDescriptionContainer" style="height:40%; position: fixed; overflow: auto;">
+
+					<div id="stopDescription"></div>
+					<div id="player"></div>
+
+				</div>
+				<div style="height:50px;position:fixed; bottom: -1px; width:100%;background-color: rgba(255,255,255,.30);  ">
+
+					<ul id="MainControl" class="MediaLinks">
+						<li>
+							<div>
+								<a id="AudioButton"><img id="AudioImage" src="images/Buttons/soundIcon.png" /> </a>
+							</div>
+						</li>
+
+						<li id="GoToPhotos">
+							<div>
+								<a id="hrefGotoPhotoList"><img src="images/Buttons/photoIcon.png" /> </a>
+							</div>
+						</li>
+						<li>
+							<div>
+								<a id="VideoLink"><img id="VideoImage" src="images/Buttons/videoCamera.png" /> </a>
+							</div>
+						</li>
+
+					</ul>
+					<ul id="AudioControl" class="MediaLinks hidden">
+						<li>
+							<div>
+								<a id="PlaySound"><img id="PlayAudio" src="images/pauseBtn.png" /> <audio style="display: none;" id="audioplayer" autoplay src=""></audio> </a>
+							</div>
+						</li>
+
+						<li>
+							<div>
+								<a id="StopSound"><img src="images/Buttons/stopBtn.png" /> </a>
+							</div>
+						</li>
+						<li>
+							<div>
+								<a id="RewindSound"><img id="RewindButton" src="images/15secs.png" /> </a>
+							</div>
+						</li>
+
+					</ul>
+				</div>
+			</div>
+
+		</article>
+		<nav class="next">
+			<h1>Photo List</h1>
+
+			<a id="hrefStopView" class="backButton"></a>
+
+		</nav>
+		<article id="photoList" class="next">
+			<section>
+				<div class="NoInternetWarning"><img class="WarningImage" src="images/warning.png" /><span style="vertical-align:middle">No network</span>
+				</div>
+				<h1 id="NoPhoto">:-(  There are no associated images to view</h1>
+				<div class="TopText">
+
+				</div>
+				<div id="PhotoList">
+					<!--<ul id="PhotoListUL" class="list"></ul>
+					<ul id="PhotoListUL" style="list-style:none;"></ul>-->
+					<table id="PhotoListTable"></table>
+				</div>
+			</section>
+		</article>
+		<nav class="next">
+			<a id="hrefPhotoList" class="backButton"> </a>
+			<h1 id="NavBarPhotoTitle"></h1>
+		</nav>
+		<article id="individualPhotos" class="next" style="overflow: hidden">
+			<div class="NoInternetWarning"><img class="WarningImage" src="images/warning.png" /><span style="vertical-align:middle">No network</span>
+			</div>
+			<div id="PicDiv" style="background-color:black;">
+				<div id="photoSwiper" class="swiper-container">
+					<div class="swiper-wrapper">
+
+					</div>
+				</div>
+
+				<!--<img id="MainPic" src="" />-->
+
+			</div>
+			<div class="LeftSwitchArrowPhotoList">
+				<img id="leftPhotoImage" class="Fade" src="images/leftPointer.png" style="position:relative" />
+			</div>
+			<div class="RightSwitchArrowPhotoList">
+				<img id="rightPhotoImage" class="Fade" src="images/rightPointer.png" style="position:relative" />
+			</div>
+			<div id="photoOverlay" class="OverlayText SlideDownPhotoList">
+				<div class="TextWrapper">
+					<table style="height:100%;width:100%">
+						<tr style="height:auto">
+							<td>
+							<div id="photoOverlayHeader">
+								<img id="PhotoOverlayExpander" src="images/upPointer.png" align="right" height="30">
+								<span id="PhotoTitle"></span>
+							</div></td>
+						</tr>
+						<tr style="height:100%">
+							<td><div id="PhotoDesc"></div></td>
+						</tr>
+
+					</table>
+
+				</div>
+			</div>
+		</article>
+		<nav id="mapNav" class="next">
+			<a id="mapLeftNavigation" class="backButton"></a>
+
+			<h1 id="mapPageTitle">Tour Map</h1>
+
+			<a id="mapRightNavigation" style=""> <img src="images/Buttons/listToggle.png" style="width: 24px; height: 24px; top: 10px;z-index:105;" /> </a>
+
+		</nav>
+		<article id="mapArticle" class="next">
+			<div class="NoInternetWarning"><img class="WarningImage" src="images/warning.png" /><span style="vertical-align:middle">No network</span>
+			</div>
+			<div class="LowGpsWarning"><img class="WarningImage" src="images/warning.png" /><span style="vertical-align:middle">Low Accuracy</span>
+			</div>
+			<div class="TourHeader">
+				<div class="TourName"></div>
+				<div class="GuidedTourButton"><img class="tourBtn" src="images/Buttons/stopTour.png" float="left" style="height:25px;vertical-align: middle;"><span class="tourStatus">Guided Tour Off</span>
+				</div>
+			</div>
+			<div id="map"></div>
+			<div id="mapToolbar" style="">
+				<table style="width:100%;vertical-align:middle">
+					<tr style="vertical-align:top">
+
+						<td>
+						<div id="hrefGeo" class="mapTools" onclick="ZoomToCurrentLocation()">
+							<img id="imgGeolocate" src="images/mapButtons/loader512.gif" height="25" width="25" />
+						</div></td>
+						<td>
+						<div id="hrefLocation" class="mapTools" onclick="BackToTrail()">
+							<img src="images/mapButtons/fullScreen.png" height="25" width="25" />
+						</div></td>
+						<td>
+						<div id="hrefTopo" class="basemapSwitcher">
+							Topo
+						</div></td>
+						<td>
+						<div id="hrefAerial" class="basemapSwitcher">
+							Aerial
+						</div></td>
+						<td>
+						<div id="hrefGarden" class="basemapSwitcher">
+							Garden
+						</div></td>
+					</tr>
+
+				</table>
+			</div>
+		</article>
+	</body>
+
+</html>
